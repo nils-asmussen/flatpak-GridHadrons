@@ -1,0 +1,35 @@
+#!/bin/bash
+set -e
+
+GRIDDIR="../Grid"
+MAXCPUS=4
+usage() {
+   echo "Usage: $0 [options]"
+   echo "  -h, -?         display this help screen"
+   echo "  -j <cpus>      use <cpus> cpus for compiling (default: $MAXCPUS)"
+   echo "  -D <dir>       use Grid directory <dir> (default: $GRIDDIR)"
+}
+
+while getopts "h?j:D:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      j)
+         MAXCPUS="$OPTARG"
+      ;;
+      D)
+         GRIDDIR="$OPTARG"
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+Hadrons-bootstrap
+Hadrons-configure -D "$GRIDDIR"
+Hadrons-compile -j "$MAXCPUS"

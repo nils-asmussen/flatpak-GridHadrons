@@ -1,0 +1,43 @@
+#!/bin/bash
+set -e
+DIR="$PWD"
+
+GRIDDIR="../Grid"
+usage() {
+   echo "Usage: $0 [options]"
+   echo "  -h, -?         display this help screen"
+   echo "  -D <dir>       use Grid directory <dir> (default: $GRIDDIR)"
+}
+
+while getopts "h?j:B:U:D:S:b:u:d:s:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      D)
+         GRIDDIR="$OPTARG"
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+#GRIDDIR must be an absolute path:
+[ "x${GRIDDIR::1}" == "x/" ] || GRIDDIR="$DIR/$GRIDDIR"
+
+[ ! -d build ] && mkdir build
+cd build
+
+../configure \
+   --prefix="$DIR/install" \
+   --with-grid="$GRIDDIR/install" \
+   CXXFLAGS="-g -std=c++11 -pthread -fopenmp -fpermissive"
+   #CXXFLAGS="-g -std=c++11 -pthread -fopenmp"
+
+#NOTE: -fpermissive is currently necessary
+#../../Hadrons/Global.hpp:127:23: error: declaration of ‘typedef class Grid::Hadrons::Solver<FImpl> Grid::Hadrons::MSolver::TRBPrecCG<FImpl, nBasis>::Solver’ changes meaning of ‘Solver’ [-fpermissive]
+#  127 | typedef Solver<FImpl> Solver##suffix;

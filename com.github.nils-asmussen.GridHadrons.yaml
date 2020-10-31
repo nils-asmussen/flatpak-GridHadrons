@@ -1,0 +1,57 @@
+app-id: com.github.nilsasmussen.GridHadrons
+runtime: org.freedesktop.Sdk
+runtime-version: '20.08'
+sdk: org.freedesktop.Sdk
+command: /app/bin/wrapper
+finish-args:
+   - --filesystem=host
+modules:
+   - name: mpfr
+     buildsystem: autotools
+     sources:
+        - type: archive
+          url: https://www.mpfr.org/mpfr-4.0.2/mpfr-4.0.2.tar.gz
+          sha256: ae26cace63a498f07047a784cd3b0e4d010b44d2b193bab82af693de57a19a78
+   - name: fftw
+     buildsystem: autotools
+     config-opts:
+        - --enable-single
+        - --enable-avx2
+     sources:
+        - type: archive
+          url: http://www.fftw.org/fftw-3.3.8.tar.gz
+          sha256: 6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303
+   - name: c-lime
+     buildsystem: autotools
+     sources:
+        - type: git
+          path: c-lime
+          url: https://github.com/usqcd-software/c-lime
+          #branch: master
+          branch: d191881d845b6074b4e5b106d9c604cef599edc4
+          commit: d191881d845b6074b4e5b106d9c604cef599edc4
+   - name: hdf5
+     buildsystem: autotools
+     config-opts:
+        - --enable-cxx
+     sources:
+        - type: archive
+          url: https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.5/src/hdf5-1.10.5.tar.bz2
+          sha256: 68d6ea8843d2a106ec6a7828564c1689c7a85714a35d8efafa2fee20ca366f44
+   - name: buildenv
+     buildsystem: simple
+     build-commands:
+        - install -D scripts/* /app/bin/
+        - install -D eigen-3.3.7.tar.bz2 /app/data/eigen-3.3.7.tar.bz2
+        - install -D sqlite-amalgamation-3310100.zip /app/data/sqlite-amalgamation-3310100.zip
+     sources:
+        - type: dir
+          path: files
+        - type: file
+          path: eigen-3.3.7.tar.bz2
+          url: https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2
+          sha256: 685adf14bd8e9c015b78097c1dc22f2f01343756f196acdc76a678e1ae352e11
+        - type: file
+          path: sqlite-amalgamation-3310100.zip
+          url: https://www.sqlite.org/2020/sqlite-amalgamation-3310100.zip
+          sha256: f3c79bc9f4162d0b06fa9fe09ee6ccd23bb99ce310b792c5145f87fbcc30efca

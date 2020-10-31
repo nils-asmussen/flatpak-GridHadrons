@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+DIR="$PWD"
+
+usage() {
+   echo "Usage: $0 [options]"
+   echo "  -h, -?         display this help screen"
+}
+
+while getopts "h?j:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+[ ! -d build ] && mkdir build
+cd build
+
+../configure \
+   --enable-precision=double --enable-simd=AVX2 --enable-comms=none \
+   --prefix="$DIR/install" \
+   --with-mpfr=/app
+   CXXFLAGS="-g -std=c++11 -pthread -fopenmp"

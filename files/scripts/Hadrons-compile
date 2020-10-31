@@ -1,0 +1,41 @@
+#!/bin/bash
+set -e
+DIR="$PWD"
+MAXCPUS=4
+
+usage() {
+   echo "Usage: $0 [options]"
+   echo "  -h, -?         display this help screen"
+   echo "  -j <cpus>      use <cpus> cpus for compiling (default: $MAXCPUS)"
+}
+
+while getopts "h?j:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      j)
+         MAXCPUS="$OPTARG"
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+[ ! -d build ] && mkdir build
+cd build
+
+#the build system currently does not always recreate the files in utilities
+#workaround:
+for i in utilities/*.o; do
+   [ -f "$i" ] && rm "$i"
+done
+
+make -j "$MAXCPUS"
+#make check
+#make -j 12 tests
+make install

@@ -1,0 +1,61 @@
+#!/bin/bash
+set -e
+DIR="$PWD"
+INSTALLATIONDIR=
+
+usage() {
+   echo "Usage: $0 [command]"
+   echo
+   echo "Commands:"
+   echo "      enter  enter a bash in the GridHadrons environment"
+   echo "     -h, -?  display this help"
+   echo "   -d <dir>  add installation in <dir> to \$PATH (e. g. -d ../Hadrons)"
+   echo
+   echo "Commands Hadrons-<command> and Grid-<command>:"
+   echo "      build  Do the full build (bootstrap, configure, compile)"
+   echo "  bootstrap  run the bootstrap script"
+   echo "    compile  run make (useful after making small changes)"
+   echo "      clean  remove build directory"
+   echo "  configure  run configure"
+   echo
+   echo "The subcommands have their individual help accessible via -?"
+   echo
+   echo "Examples:"
+   echo "  flatpak run com.github.nilsasmussen.GridHadrons Hadrons-build -j 4 -D ../Grid"
+   echo "  flatpak run com.github.nilsasmussen.GridHadrons -d Hadrons HadronsXmlRun MyAmazing.xml"
+   echo "  flatpak run com.github.nilsasmussen.GridHadrons Hadrons/install/bin/HadronsXmlRun MyAmazing.xml"
+   echo
+   echo "  alias GridHadrons='flatpak run com.github.nilsasmussen.GridHadrons -d ~/path/to/Hadrons'"
+   echo "  GridHadrons HadronsXmlRun MyAmazing.xml"
+}
+
+if [ $# == 0 ]; then
+   usage
+   exit 0
+fi
+
+while getopts "h?d:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      d)
+         INSTALLATIONDIR="$OPTARG"
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+if [ ! -z "$INSTALLATIONDIR" ]; then
+   #INSTALLATIONDIR must be an absolute path:
+   [ "x${INSTALLATIONDIR::1}" == "x/" ] || INSTALLATIONDIR="$DIR/$INSTALLATIONDIR"
+
+   export PATH="$INSTALLATIONDIR/install/bin:$PATH"
+fi
+
+"$@"

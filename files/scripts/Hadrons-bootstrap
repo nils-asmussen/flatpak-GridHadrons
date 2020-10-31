@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+usage() {
+   echo "Usage: $0 [options]"
+   echo "  -h, -?         display this help screen"
+}
+
+while getopts "h?j:" arg; do
+   case "$arg" in
+      h|\?)
+         usage
+         exit 0
+      ;;
+      *)
+         usage >&2
+         exit 1
+      ;;
+   esac
+done
+shift $((OPTIND -1))
+
+sed -i -e 's@wget https://www.sqlite.org/2020/sqlite-amalgamation-3310100.zip@cp /app/data/sqlite-amalgamation-3310100.zip .@' bootstrap.sh
+./bootstrap.sh 

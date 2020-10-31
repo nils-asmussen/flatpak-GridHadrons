@@ -10,9 +10,12 @@ Installation
 ```
 flatpak install flathub org.freedesktop.Platform//20.08 org.freedesktop.Sdk//20.08
 ```
-- Compile and install GridHadrons
+- Download, compile, and install GridHadrons
 ```
+git clone https://github.com/nils-asmussen/flatpak-GridHadrons
+cd flatpak-GridHadrons
 flatpak-builder build-dir com.github.nils-asmussen.GridHadrons.yaml --force-clean --install --user --jobs=4
+cd ..
 ```
 
 Usage
